@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
-const port = process.env.APP_PORT;
+const port = process.env.PORT;
 const {getTokenPrices} = require('./src/db');
 
 
