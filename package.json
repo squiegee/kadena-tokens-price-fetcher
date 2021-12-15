@@ -1,7 +1,7 @@
 {
-  "name": "kadena-tokens-price-tracker-chron",
+  "name": "kadena-tokens-price-fetcher",
   "version": "1.0.0",
-  "description": "price tracker",
+  "description": "price fetcher for tokens on the kadena blockchain",
   "main": "index.js",
   "dependencies": {
     "aws-sdk": "^2.1046.0",
@@ -14,7 +14,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "kitty-kad",
   "license": "ISC"
