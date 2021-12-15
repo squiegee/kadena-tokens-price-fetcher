@@ -2,6 +2,8 @@ require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
 const {getTokenPrices} = require('./src/db');
+const tokensData = require('./src/tokens.json');
+
 
 const app = express();
 
@@ -18,6 +20,12 @@ app.get('/getPrices', async (req, res) => {
 
 app.get('/isRunning', async (_req, res) => {
     res.send('running');
+});
+
+app.get('/getTokenMetadata', async (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json(tokensData);
 });
 
 const port = process.env.PORT;
