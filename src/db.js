@@ -33,6 +33,35 @@ async function getTokenPrices(tokenAddress, fromTime, toTime) {
     return results;
 }
 
+async function insertTokenPrices(pricesData) {
+    if (pricesData.length === 0 ){
+        return;
+    }
+    await createTablesIfNotExists();
+    const unixTime = Math.floor(new Date().getTime() / 1000);
+    for (const data of pricesData) {
+        const query = `INSERT INTO token_prices
+        (unix_time,token_address,price_in_usd,price_in_kda)
+        VALUES ($1,$2,$3,$4);`
+        const params =[unixTime, data.tokenAddress, data.priceInUsd, data.priceInKda];
+        await executeQuery(query, params);
+    }
+}
+
+async function createTablesIfNotExists() {
+    const query = `
+    CREATE TABLE IF NOT EXISTS "token_prices" (
+        "unix_time" BIGINT,
+	    "token_address" VARCHAR(32) NOT NULL,
+	    "price_in_usd" FLOAT,
+        "price_in_kda" FLOAT
+    );
+    CREATE INDEX IF NOT EXISTS token_addresses ON token_prices (token_address);
+    CREATE INDEX IF NOT EXISTS token_price_times ON token_prices (unix_time);
+    `
+    executeQuery(query);
+}
+
 async function executeQuery (query, params=[]) {
     try {
         const res = await pool.query(query, params);
@@ -43,5 +72,5 @@ async function executeQuery (query, params=[]) {
     }
 };
 
-module.exports = {getTokenPrices}
+module.exports = {getTokenPrices, insertTokenPrices}
 
