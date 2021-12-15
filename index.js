@@ -8,7 +8,8 @@ const {getTokenPrices} = require('./src/db');
 app.get('/getPrices', async (req, res) => {
     const {tokenAddress, fromTime, toTime} = req.query;
     const prices = await getTokenPrices(tokenAddress, fromTime, toTime);
-    res.send(prices);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(prices));
 });
 
 app.get('/isRunning', async (_req, res) => {
