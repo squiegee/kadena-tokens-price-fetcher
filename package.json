@@ -1,0 +1,21 @@
+{
+  "name": "kadena-tokens-price-tracker-chron",
+  "version": "1.0.0",
+  "description": "price tracker",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1046.0",
+    "coingecko-api": "^1.0.10",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "pact-lang-api": "^4.2.0",
+    "pg": "^8.7.1",
+    "retry": "^0.13.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kitty-kad",
+  "license": "ISC"
+}
