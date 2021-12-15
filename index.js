@@ -5,10 +5,14 @@ const port = process.env.APP_PORT;
 const {getTokenPrices} = require('./src/db');
 
 
-app.get('/', async (req, res) => {
+app.get('/getPrices', async (req, res) => {
     const {tokenAddress, fromTime, toTime} = req.query;
     const prices = await getTokenPrices(tokenAddress, fromTime, toTime);
     res.send(prices);
+});
+
+app.get('/isRunning', async (_req, res) => {
+    res.send('running');
 });
 
 app.listen(port, () => {
