@@ -26,10 +26,26 @@ async function getTokenPrices(tokenAddress, fromTime, toTime) {
     const currTime = Math.floor(new Date().getTime() / 1000);
     fromTime = fromTime ?? currTime - THIRTY_DAYS_SECONDS;
     toTime = toTime ?? currTime;
-    const query = `SELECT * FROM token_prices WHERE token_address = $1
-    AND unix_time >= $2 AND unix_time <= $3;`
     const params = [ tokenAddress, fromTime,toTime];
-    const results = await executeQuery(query, params);
+    const countQuery = `SELECT count(*) FROM token_prices WHERE token_address = $1
+    AND unix_time >= $2 AND unix_time <= $3;`
+    const counts = await executeQuery(countQuery, params);
+    const selectWhere = `WHERE token_address = $1
+    AND unix_time >= $2 AND unix_time <= $3` 
+    let selectQuery = `SELECT * FROM token_prices ${selectWhere};`;
+    // If we have too many results, lets reduce how many rows we return   
+    if (counts[0].count >= 150) {
+        const modulo = Math.ceil(counts[0].count / 100);
+        selectQuery = `
+            SELECT t.*
+            FROM (
+                SELECT *, row_number() OVER(ORDER BY unix_time ASC) AS row
+                    FROM token_prices ${selectWhere}
+                ) t
+            WHERE t.row % ${modulo} = 0;
+        `
+    }
+    const results = await executeQuery(selectQuery, params);
     return results;
 }
 
