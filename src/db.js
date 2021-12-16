@@ -72,8 +72,7 @@ async function createTablesIfNotExists() {
 	    "price_in_usd" FLOAT,
         "price_in_kda" FLOAT
     );
-    CREATE INDEX IF NOT EXISTS token_addresses ON token_prices (token_address);
-    CREATE INDEX IF NOT EXISTS token_price_times ON token_prices (unix_time);
+    CREATE INDEX IF NOT EXISTS token_address_time ON token_prices (token_address, unix_time);
     `
     executeQuery(query);
 }
