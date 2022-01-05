@@ -16,6 +16,7 @@ async function fetchAllPrices () {
     // 2. Go through each token, get the price in KDA and use KDA -> USD calculate USD value
     const prices = [];
     for(const token of tokensData) {
+        try {
         const priceInKda = await retryNetworkRequest(async()=>getTokenToKadena(token.address), 
             `fetch ${token.name} in KDA`);
         if (priceInKda == null) {
@@ -23,6 +24,9 @@ async function fetchAllPrices () {
         }
         const priceInUsd = priceInKda*kdaToUsd;
         prices.push({tokenAddress: token.address, priceInUsd, priceInKda});
+        } catch (e) {
+            console.log(`Could not fetch token ${token}, got exception ${e}`);
+        }
     }
     return prices;
 }
