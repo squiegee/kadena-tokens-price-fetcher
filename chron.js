@@ -16,8 +16,7 @@ const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
   pricesData = await fetchAllPrices();
   // Insert general data into the database
   await insertTokenPrices(pricesData);
-  // // Insert specialised timed data
-  console.log(`updating time type data`);
+  // Insert specialised timed data
   for (const token of tokensData) {
     try {
       await updatePriceForTimeType(token.address, TIME_TYPE.per_hour);
