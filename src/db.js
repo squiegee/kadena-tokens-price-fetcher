@@ -19,7 +19,33 @@ if (process.env.IS_DEV) {
 
 const THIRTY_DAYS_SECONDS = 60 * 60 * 24 * 30;
 
-async function getTokenPrices(tokenAddress, fromTime, toTime) {
+async function getLatestTokenPriceForTimeType(tokenAddress, time_type) {
+  const selectQuery = `SELECT * FROM token_prices_timed WHERE token_address=$1
+    AND time_type=$2 ORDER BY unix_time DESC LIMIT 1;`;
+  const params = [tokenAddress, time_type];
+  const results = await executeQuery(selectQuery, params);
+  return results?.[0];
+}
+
+async function getTimeTypeTokenPrices(
+  tokenAddress,
+  time_type,
+  fromTime,
+  toTime
+) {
+  const selectQuery = `SELECT * FROM token_prices_timed WHERE token_address=$1
+    AND time_type=$2 AND unix_time >= $3 and unix_time <= $4;`;
+  const params = [tokenAddress, time_type, fromTime, toTime];
+  const results = await executeQuery(selectQuery, params);
+  return results;
+}
+
+async function getTokenPrices(
+  tokenAddress,
+  fromTime,
+  toTime,
+  unlimited = false
+) {
   if (tokenAddress == null || tokenAddress === "") {
     return [];
   }
@@ -34,7 +60,7 @@ async function getTokenPrices(tokenAddress, fromTime, toTime) {
     AND unix_time >= $2 AND unix_time <= $3`;
   let selectQuery = `SELECT * FROM token_prices ${selectWhere};`;
   // If we have too many results, lets reduce how many rows we return
-  if (counts[0].count >= 250) {
+  if (unlimited !== true && counts[0].count >= 250) {
     const modulo = Math.ceil(counts[0].count / 100);
     selectQuery = `
             SELECT t.*
@@ -64,6 +90,32 @@ async function insertTokenPrices(pricesData) {
       data.tokenAddress,
       data.priceInUsd,
       data.priceInKda,
+    ];
+    await executeQuery(query, params);
+  }
+}
+
+async function insertTokenPricesTimeType(pricesData) {
+  if (pricesData.length === 0) {
+    return;
+  }
+  await createTablesIfNotExists();
+  for (const data of pricesData) {
+    const query = `INSERT INTO token_prices_timed
+        (time_type, unix_time,token_address,price_in_usd_low,price_in_usd_high, price_in_usd_start, price_in_usd_end, price_in_kda_low, price_in_kda_high, price_in_kda_start, price_in_kda_end)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`;
+    const params = [
+      data.time_type,
+      data.unix_time,
+      data.token_address,
+      data.price_in_usd_low,
+      data.price_in_usd_high,
+      data.price_in_usd_start,
+      data.price_in_usd_end,
+      data.price_in_kda_low,
+      data.price_in_kda_high,
+      data.price_in_kda_start,
+      data.price_in_kda_end,
     ];
     await executeQuery(query, params);
   }
@@ -106,4 +158,10 @@ async function executeQuery(query, params = []) {
   }
 }
 
-module.exports = { getTokenPrices, insertTokenPrices };
+module.exports = {
+  getTokenPrices,
+  insertTokenPrices,
+  getLatestTokenPriceForTimeType,
+  insertTokenPricesTimeType,
+  getTimeTypeTokenPrices,
+};
