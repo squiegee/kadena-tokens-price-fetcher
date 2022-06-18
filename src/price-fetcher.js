@@ -58,5 +58,4 @@ async function sleep(ms) {
     setTimeout(resolve, ms);
   }).promise();
 }
-
 module.exports = { fetchAllPrices };
