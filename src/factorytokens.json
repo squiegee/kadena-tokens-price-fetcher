@@ -1,0 +1,9 @@
+[
+    {
+        "name": "Stake (STAKE)",
+        "poolId": "KDA+STAKE",
+        "address": "free.stake-token",
+        "exchange": "free.factory-exchange",
+        "chainId": "5"
+    }
+]
